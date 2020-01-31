@@ -46,8 +46,6 @@ defmodule Turbojpeg.Sink do
 
   @impl true
   def handle_write(:input, %Buffer{payload: payload}, _ctx, state) do
-    File.write!("fixture_i420.yuv", Shmex.to_binary(payload))
-
     with {:ok, data} <- Native.to_jpeg(payload, state.jpeg_ref),
          :ok <- File.write(state.filename, Shmex.to_binary(data)) do
       {:ok, state}
