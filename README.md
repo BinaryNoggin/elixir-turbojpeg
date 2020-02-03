@@ -18,7 +18,7 @@ This library requires libjpeg-turbo to be installed
 
     brew install libjpeg-turbo
 
-If [available in Hex](https://hex.pm/turbojpeg/), the package can be installed
+If [available in Hex](https://hex.pm/packages/turbojpeg), the package can be installed
 by adding `turbojpeg` to your list of dependencies in `mix.exs`:
 
 ```elixir
