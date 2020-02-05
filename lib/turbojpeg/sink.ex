@@ -15,8 +15,10 @@ defmodule Turbojpeg.Sink do
   def handle_init(options) do
     state = %{
       quality: options.quality,
+      height: nil,
+      width: nil,
+      format: nil,
       filename: options.filename,
-      jpeg_ref: nil,
       timer_started?: false
     }
 
@@ -37,8 +39,7 @@ defmodule Turbojpeg.Sink do
     %{input: input} = ctx.pads
 
     if !input.caps || caps == input.caps do
-      {:ok, ref} = Native.create(caps.width, caps.height, state.quality, caps.format)
-      {:ok, %{state | jpeg_ref: ref}}
+      {:ok, %{state | width: caps.width, height: caps.height, format: caps.format}}
     else
       raise "Caps have changed while playing. This is not supported."
     end
@@ -46,7 +47,8 @@ defmodule Turbojpeg.Sink do
 
   @impl true
   def handle_write(:input, %Buffer{payload: payload}, _ctx, state) do
-    with {:ok, data} <- Native.to_jpeg(payload, state.jpeg_ref),
+    with {:ok, data} <-
+           Native.yuv_to_jpeg(payload, state.width, state.height, state.quality, state.format),
          :ok <- File.write(state.filename, Shmex.to_binary(data)) do
       {:ok, state}
     else
