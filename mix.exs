@@ -1,7 +1,7 @@
 defmodule Turbojpeg.MixProject do
   use Mix.Project
 
-  @version "0.1.1"
+  @version "0.2.0"
   @github_link "https://github.com/binarynoggin/elixir-turbojpeg"
 
   def project do

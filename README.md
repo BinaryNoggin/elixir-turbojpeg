@@ -33,12 +33,10 @@ end
 ## Basic Usage
 
 ```elixir 
-iex(1)> {:ok, native} = Turbojpeg.Native.create(1920, 1080, 90, :I420)
-{:ok, #Reference<0.938325095.2990669826.234059>}
-iex(2)> frame = File.read!("fixture/i420.yuv")
+iex(1)> frame = File.read!("fixture/i420.yuv")
 <<0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...>>
-iex(3)> Turbojpeg.Native.to_jpeg(Shmex.new(frame), native)
+iex(2)> {:ok, jpeg} = Turbojpeg.Native.yuv_to_jpeg(Shmex.new(frame), 1920, 1080, 90, :I420)
 {:ok,
  %Shmex{
    capacity: 203783,
