@@ -34,7 +34,7 @@ defmodule Turbojpeg.MixProject do
       {:shmex, "~> 0.2.0"},
       {:bundlex, "~> 0.2.6"},
       {:membrane_core, "~> 0.5.0"},
-      {:ex_doc, "~> 0.21.3", only: [:docs]}
+      {:ex_doc, "~> 0.21.3", only: [:dev], runtime: false}
     ]
   end
 
