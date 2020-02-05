@@ -12,7 +12,7 @@ This library requires libjpeg-turbo to be installed
 
 ### Ubuntu/Debian
 
-    sudo apt-get install libjpeg-turbo
+    sudo apt-get install libturbojpeg0-dev
 
 ### OSX
 
