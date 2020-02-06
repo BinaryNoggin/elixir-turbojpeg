@@ -33,6 +33,41 @@ defmodule TurbojpegTest do
     assert result.format == :I444
   end
 
+  property "solid color jpeg complementary", :verbose do
+    forall [width, height, seed, {r, g, b}, {sampling_factor, format}] <- [
+             width(),
+             height(),
+             seed(),
+             rgb(),
+             format()
+           ] do
+      color = :io_lib.format('#~2.16.0B~2.16.0B~2.16.0B', [r, g, b])
+
+      jpeg =
+        %Image{}
+        |> custom("size", "#{width}x#{height}")
+        |> custom("seed", seed)
+        |> custom("canvas", to_string(color))
+        |> custom("sampling-factor", sampling_factor)
+        |> custom("stdout", "jpg:-")
+        |> create(buffer: true)
+
+      jpeg = Shmex.new(jpeg.buffer)
+      {:ok, yuv} = Turbojpeg.Native.jpeg_to_yuv(jpeg)
+
+      {:ok, original_header} = Turbojpeg.Native.get_jpeg_header(jpeg)
+
+      {:ok, new_jpeg} =
+        Turbojpeg.Native.yuv_to_jpeg(yuv, width, height, 100, original_header.format)
+
+      {:ok, new_header} = Turbojpeg.Native.get_jpeg_header(new_jpeg)
+
+      assert original_header == new_header
+      # does not work yet
+      # assert Shmex.to_binary(jpeg) == Shmex.to_binary(new_jpeg)
+    end
+  end
+
   property "jpeg and yuv conversion are complementary after running through the tool once" do
     forall [width, height, seed, {sampling_factor, format}] <- [
              width(),
@@ -73,4 +108,10 @@ defmodule TurbojpegTest do
   def format do
     oneof([{"4:2:0", :I420}, {"4:4:4", :I444}, {"4:2:2", :I422}])
   end
+
+  def rgb do
+    {color(), color(), color()}
+  end
+
+  def color(), do: integer(0, 255)
 end
