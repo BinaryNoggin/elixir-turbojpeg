@@ -11,6 +11,8 @@ int format_to_tjsamp(char* format) {
     return TJSAMP_422;
   } else if(strcmp(format, "I444") == 0) {
     return TJSAMP_444;
+  } else if(strcmp(format, "GRAY") == 0) {
+    return TJSAMP_GRAY;
   } else {
     return -1;
   }
@@ -28,7 +30,9 @@ const char* tjsamp_to_format(enum TJSAMP tjsamp) {
       return("I422");
     case(TJSAMP_444):
       return("I444");
-    default:
+    case(TJSAMP_GRAY):
+      return("GRAY");
+    default: 
       return("unknown_format");
   }
 }
