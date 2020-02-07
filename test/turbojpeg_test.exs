@@ -59,7 +59,7 @@ defmodule TurbojpegTest do
     end
   end
 
-  property "solid color jpeg complementary", :verbose do
+  property "solid color jpeg complementary" do
     forall [width, height, seed, {r, g, b}, {sampling_factor, _format}] <- [
              width(),
              height(),
@@ -98,9 +98,7 @@ defmodule TurbojpegTest do
     end
   end
 
-  property "jpeg and yuv conversion are complementary after running through the tool once", [
-    :verbose
-  ] do
+  property "jpeg and yuv conversion are complementary after running through the tool once" do
     forall [width, height, seed, {sampling_factor, format}] <- [
              width(),
              height(),
