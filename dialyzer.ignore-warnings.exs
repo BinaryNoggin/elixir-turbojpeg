@@ -1,0 +1,3 @@
+[
+  {"lib/turbojpeg/native.ex"}
+]

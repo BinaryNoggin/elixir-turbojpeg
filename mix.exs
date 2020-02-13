@@ -18,7 +18,7 @@ defmodule Turbojpeg.MixProject do
       docs: docs(),
       deps: deps(),
       dialyzer: [
-        ignore_warnings: "dialyzer.ignore-warnings"
+        ignore_warnings: "dialyzer.ignore-warnings.exs"
       ]
     ]
   end

@@ -22,7 +22,6 @@ defmodule Turbojpeg do
 
   @spec yuv_to_jpeg(Shmex.t(), width, height, quality, format) ::
           {:ok, Shmex.t()} | error()
-
   def yuv_to_jpeg(yuv, width, height, quality, format) do
     Native.yuv_to_jpeg(yuv, width, height, quality, format)
   rescue
@@ -32,7 +31,6 @@ defmodule Turbojpeg do
 
   @spec jpeg_to_yuv(Shmex.t()) ::
           {:ok, Shmex.t()} | error()
-
   def jpeg_to_yuv(jpeg) do
     Native.jpeg_to_yuv(jpeg)
   rescue
