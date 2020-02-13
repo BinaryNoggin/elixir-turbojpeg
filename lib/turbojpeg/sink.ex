@@ -1,5 +1,4 @@
 defmodule Turbojpeg.Sink do
-  alias Turbojpeg.Native
   use Membrane.Sink
   alias Membrane.{Buffer, Time}
   alias Membrane.Caps.Video.Raw
@@ -48,12 +47,12 @@ defmodule Turbojpeg.Sink do
   @impl true
   def handle_write(:input, %Buffer{payload: payload}, _ctx, state) do
     with {:ok, data} <-
-           Native.yuv_to_jpeg(payload, state.width, state.height, state.quality, state.format),
+           Turbojpeg.yuv_to_jpeg(payload, state.width, state.height, state.quality, state.format),
          :ok <- File.write(state.filename, Shmex.to_binary(data)) do
       {:ok, state}
     else
-      {:error, reason} ->
-        {{:error, reason}, state}
+      {:error, _} = error ->
+        {error, state}
     end
   end
 

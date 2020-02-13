@@ -49,7 +49,7 @@ defmodule TurbojpegTest do
           Shmex.new(jpeg.buffer)
         end)
 
-      {native_micros, ret} =
+      {_native_micros, ret} =
         :timer.tc(fn ->
           Turbojpeg.Native.jpeg_to_yuv(jpeg)
         end)
