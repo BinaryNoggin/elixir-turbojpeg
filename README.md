@@ -25,7 +25,7 @@ by adding `turbojpeg` to your list of dependencies in `mix.exs`:
 def deps do
   [
     {:shmex, "~> 0.2.0"},
-    {:turbojpeg, "~> 0.1.0"}
+    {:turbojpeg, "~> 0.2.1"}
   ]
 end
 ```
@@ -36,7 +36,7 @@ end
 iex(1)> frame = File.read!("fixture/i420.yuv")
 <<0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...>>
-iex(2)> {:ok, jpeg} = Turbojpeg.Native.yuv_to_jpeg(Shmex.new(frame), 1920, 1080, 90, :I420)
+iex(2)> {:ok, jpeg} = Turbojpeg.yuv_to_jpeg(Shmex.new(frame), 1920, 1080, 90, :I420)
 {:ok,
  %Shmex{
    capacity: 203783,
