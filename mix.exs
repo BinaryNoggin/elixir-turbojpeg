@@ -16,7 +16,10 @@ defmodule Turbojpeg.MixProject do
       homepage_url: @github_link,
       package: package(),
       docs: docs(),
-      deps: deps()
+      deps: deps(),
+      dialyzer: [
+        ignore_warnings: "dialyzer.ignore-warnings.exs"
+      ]
     ]
   end
 
@@ -36,7 +39,8 @@ defmodule Turbojpeg.MixProject do
       {:membrane_core, "~> 0.5.0"},
       {:ex_doc, "~> 0.21.3", only: [:dev], runtime: false},
       {:propcheck, "~> 1.2.0", only: [:test]},
-      {:mogrify, github: "ConnorRigby/mogrify", branch: "master", only: [:test, :dev]}
+      {:mogrify, github: "ConnorRigby/mogrify", branch: "master", only: [:test, :dev]},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false}
     ]
   end
 
