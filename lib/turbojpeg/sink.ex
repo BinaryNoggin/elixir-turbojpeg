@@ -3,12 +3,10 @@ defmodule Turbojpeg.Sink do
   alias Membrane.{Buffer, Time}
   alias Membrane.Caps.Video.Raw
 
-  def_input_pad(:input, caps: Raw, demand_unit: :buffers)
+  def_input_pad :input, caps: Raw, demand_unit: :buffers
 
-  def_options(
-    filename: [type: :binary, description: "File to write the jpeg file"],
-    quality: [type: :integer, description: "Jpeg encoding quality"]
-  )
+  def_options filename: [type: :binary, description: "File to write the jpeg file"],
+              quality: [type: :integer, description: "Jpeg encoding quality"]
 
   @impl true
   def handle_init(options) do
