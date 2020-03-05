@@ -2,6 +2,8 @@
 
 Fast JPEG encoding from raw YUV data using [libjpeg-turbo](https://libjpeg-turbo.org/)
 
+[![CircleCI](https://circleci.com/gh/BinaryNoggin/elixir-turbojpeg/tree/master.svg?style=svg)](https://circleci.com/gh/BinaryNoggin/elixir-turbojpeg/tree/master)
+
 ## Installation
 
 This library requires libjpeg-turbo to be installed
@@ -12,11 +14,25 @@ This library requires libjpeg-turbo to be installed
 
 ### Ubuntu/Debian
 
-    sudo apt-get install libturbojpeg0-dev
+    sudo apt-get install libturbojpeg libturbojpeg0-dev
 
 ### OSX
 
     brew install libjpeg-turbo
+    
+### Develement Dependencies
+
+### Arch linux
+
+    sudo pacman -S imagemagick
+
+### Ubuntu/Debian
+
+    sudo apt-get install imagemagick
+
+### OSX
+
+    brew install imagemagick
 
 If [available in Hex](https://hex.pm/packages/turbojpeg), the package can be installed
 by adding `turbojpeg` to your list of dependencies in `mix.exs`:
