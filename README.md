@@ -17,6 +17,20 @@ This library requires libjpeg-turbo to be installed
 ### OSX
 
     brew install libjpeg-turbo
+    
+### Develement Dependencies
+
+### Arch linux
+
+    sudo pacman -S imagemagick
+
+### Ubuntu/Debian
+
+    sudo apt-get install imagemagick
+
+### OSX
+
+    brew install imagemagick
 
 If [available in Hex](https://hex.pm/packages/turbojpeg), the package can be installed
 by adding `turbojpeg` to your list of dependencies in `mix.exs`:
