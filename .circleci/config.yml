@@ -15,6 +15,7 @@ jobs:
 
       - run: mix local.hex --force
       - run: mix local.rebar --force
+      - run: apt-get update
       - run: apt-get install libturbojpeg0-dev imagemagick
 
       - restore_cache:  # restores saved mix cache
