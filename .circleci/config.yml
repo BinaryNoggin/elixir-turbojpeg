@@ -16,7 +16,7 @@ jobs:
       - run: mix local.hex --force
       - run: mix local.rebar --force
       - run: apt-get update
-      - run: apt-get install -y imagemagick git libjpeg-turbo-progs libjpeg-turbo-test libjpeg-turbo8 libjpeg-turbo8-dbg libjpeg-turbo8-dev libturbojpeg0-dev
+      - run: apt-get install -y imagemagick git libjpeg-turbo8-dev
 
       - restore_cache:  # restores saved mix cache
       # Read about caching dependencies: https://circleci.com/docs/2.0/caching/
