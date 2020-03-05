@@ -6,7 +6,7 @@ jobs:
     docker:
       - image: binarynoggin/elixir-release-builder:elixir-1.10
         environment:
-          MIX_ENV: prod
+          MIX_ENV: test
 
     working_directory: ~/apps
 
