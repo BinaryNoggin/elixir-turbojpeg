@@ -14,7 +14,7 @@ This library requires libjpeg-turbo to be installed
 
 ### Ubuntu/Debian
 
-    sudo apt-get install libturbojpeg
+    sudo apt-get install libturbojpeg-dev
 
 ### OSX
 
