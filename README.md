@@ -2,6 +2,8 @@
 
 Fast JPEG encoding from raw YUV data using [libjpeg-turbo](https://libjpeg-turbo.org/)
 
+[![CircleCI](https://circleci.com/gh/BinaryNoggin/elixir-turbojpeg/tree/master.svg?style=svg)](https://circleci.com/gh/BinaryNoggin/elixir-turbojpeg/tree/master)
+
 ## Installation
 
 This library requires libjpeg-turbo to be installed
