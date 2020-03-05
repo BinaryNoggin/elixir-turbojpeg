@@ -29,36 +29,6 @@ defmodule TurbojpegTest do
     assert result.format == :I444
   end
 
-  @tag [timeout: :timer.minutes(2)]
-  property "encoding an image is fast", numtests: 5 do
-    forall [width, height] <- [
-             width(100),
-             height(100)
-           ] do
-      jpeg =
-        %Mogrify.Image{}
-        |> Mogrify.custom("size", "#{width}x#{height}")
-        |> Mogrify.custom("seed", 43)
-        |> Mogrify.custom("plasma", "fractal")
-        |> Mogrify.custom("sampling-factor", "4:4:4")
-        |> Mogrify.custom("stdout", "jpg:-")
-        |> Mogrify.create(buffer: true)
-
-      Shmex.new(jpeg.buffer)
-
-      ret = Turbojpeg.jpeg_to_yuv(jpeg)
-
-      # Only for local runs
-      # {time_micros, ret} =
-      #   :timer.tc(fn ->
-      #     Turbojpeg.jpeg_to_yuv(jpeg)
-      #   end)
-
-      # assert time_micros / 1000 <= 5000
-      assert match?({:ok, _}, ret)
-    end
-  end
-
   property "solid color jpeg complementary" do
     forall [width, height, seed, {r, g, b}, {sampling_factor, _format}] <- [
              width(),
