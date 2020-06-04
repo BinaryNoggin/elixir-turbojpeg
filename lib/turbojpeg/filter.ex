@@ -1,20 +1,29 @@
 defmodule Turbojpeg.Filter do
+  @moduledoc """
+  Membrane filter converting raw video frames to JPEG.
+  """
   use Membrane.Filter
   alias Membrane.Buffer
 
   def_input_pad :input, demand_unit: :buffers, caps: Membrane.Caps.Video.Raw
-  def_output_pad :output, caps: Membrane.Caps.Video.Raw
+  # TODO: implement JPEG caps
+  def_output_pad :output, caps: :any
 
   def_options quality: [
                 type: :integer,
                 spec: Turbojpeg.quality(),
-                default: 80,
+                default: 100,
                 description: "Jpeg encoding quality"
               ]
 
   @impl true
   def handle_demand(:output, size, :buffers, _ctx, state) do
     {{:ok, demand: {:input, size}}, state}
+  end
+
+  @impl true
+  def handle_caps(:input, _caps, _ctx, state) do
+    {:ok, state}
   end
 
   @impl true
