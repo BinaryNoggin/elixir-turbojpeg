@@ -1,7 +1,7 @@
 defmodule Turbojpeg.MixProject do
   use Mix.Project
 
-  @version "0.2.1"
+  @version "0.2.2"
   @github_link "https://github.com/binarynoggin/elixir-turbojpeg"
 
   def project do
@@ -40,7 +40,7 @@ defmodule Turbojpeg.MixProject do
       {:membrane_common_c, "~> 0.3.0"},
       {:ex_doc, "~> 0.21.3", only: [:dev], runtime: false},
       {:propcheck, "~> 1.2.0", only: [:test]},
-      {:mogrify, github: "ConnorRigby/mogrify", branch: "master", only: [:test, :dev]},
+      {:mogrify, only: [:test, :dev]},
       {:membrane_element_rawvideo_parser, "~> 0.2.0", only: :test},
       {:dialyxir, "~> 1.0.0", only: [:dev], runtime: false}
     ]
