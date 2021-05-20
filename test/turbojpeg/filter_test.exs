@@ -44,7 +44,7 @@ defmodule Turbojpeg.FilterTest do
     1..repeat
     |> Enum.each(fn _ ->
       assert_sink_buffer(pipeline, :sink, buffer)
-      assert Shmex.to_binary(buffer.payload) == jpeg
+      assert buffer.payload == jpeg
     end)
 
     assert_end_of_stream(pipeline, :sink)

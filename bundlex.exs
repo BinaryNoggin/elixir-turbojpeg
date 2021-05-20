@@ -3,16 +3,16 @@ defmodule Turbojpeg.BundlexProject do
 
   def project() do
     [
-      nifs: nifs(Bundlex.platform())
+      natives: natives(Bundlex.platform())
     ]
   end
 
-  def nifs(_platform) do
+  def natives(_platform) do
     [
       turbojpeg_native: [
-        deps: [unifex: :unifex, shmex: :lib],
-        src_base: "turbojpeg_native",
-        sources: ["_generated/turbojpeg_native.c", "turbojpeg_native.c"],
+        interface: :nif,
+        preprocessor: Unifex,
+        sources: ["turbojpeg_native.c"],
         pkg_configs: ["libturbojpeg"]
       ]
     ]

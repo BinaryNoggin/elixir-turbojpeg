@@ -9,20 +9,19 @@ defmodule TurbojpegTest do
 
   test "Converts an i420 frame into a jpeg" do
     frame = File.read!(@i420_fixture)
-    shmex = Shmex.new(frame)
-    {:ok, jpeg} = Turbojpeg.yuv_to_jpeg(shmex, 1920, 1080, 100, :I420)
-    assert match?(@jpeg_header <> _, Shmex.to_binary(jpeg))
+    {:ok, jpeg} = Turbojpeg.yuv_to_jpeg(frame, 1920, 1080, 100, :I420)
+    assert match?(@jpeg_header <> _, jpeg)
   end
 
   test "extracts i444 frame from jpeg" do
-    jpeg = Shmex.new(File.read!(@ff0000_fixture))
+    jpeg = File.read!(@ff0000_fixture)
     {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
     {:ok, new_jpeg} = Turbojpeg.yuv_to_jpeg(yuv, 64, 64, 100, :I444)
-    assert Shmex.to_binary(jpeg) == Shmex.to_binary(new_jpeg)
+    assert jpeg == new_jpeg
   end
 
   test "get jpeg header" do
-    jpeg = Shmex.new(File.read!(@ff0000_fixture))
+    jpeg = File.read!(@ff0000_fixture)
     {:ok, result} = Turbojpeg.get_jpeg_header(jpeg)
     assert result.width == 64
     assert result.height == 64
