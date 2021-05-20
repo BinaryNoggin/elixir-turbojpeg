@@ -40,8 +40,7 @@ by adding `turbojpeg` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:shmex, "~> 0.2.0"},
-    {:turbojpeg, "~> 0.2.1"}
+    {:turbojpeg, "~> 0.3"}
   ]
 end
 ```
@@ -52,19 +51,11 @@ end
 iex(1)> frame = File.read!("fixture/i420.yuv")
 <<0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
   0, 0, 0, 2, 0, 0, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, ...>>
-iex(2)> {:ok, jpeg} = Turbojpeg.yuv_to_jpeg(Shmex.new(frame), 1920, 1080, 90, :I420)
-{:ok,
- %Shmex{
-   capacity: 203783,
-   guard: #Reference<0.938325095.2990669827.232440>,
-   name: "/shmex-00000005607042890133#000",
-   size: 203783
- }}
-iex(4)> Shmex.to_binary(jpeg)
-<<255, 216, 255, 224, 0, 16, 74, 70, 73, 70, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 255,
+iex(2)> {:ok, jpeg} = Turbojpeg.yuv_to_jpeg(frame, 1920, 1080, 90, :I420)
+{:ok, <<255, 216, 255, 224, 0, 16, 74, 70, 73, 70, 0, 1, 1, 0, 0, 1, 0, 1, 0, 0, 255,
   219, 0, 67, 0, 3, 2, 2, 3, 2, 2, 3, 3, 3, 3, 4, 3, 3, 4, 5, 8, 5, 5, 4, 4, 5,
-  10, 7, 7, 6, ...>>
-iex(5)> File.write!("test.jpg", Shmex.to_binary(jpeg))
+  10, 7, 7, 6, ...>>}
+iex(3)> File.write!("test.jpg", jpeg)
 :ok
 ```
 
@@ -104,4 +95,4 @@ end
 
 # Copyright and License
 
-Copyright 2020, Binary Noggin
+Copyright 2021, Binary Noggin
