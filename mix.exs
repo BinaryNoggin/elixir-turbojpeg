@@ -9,7 +9,7 @@ defmodule Turbojpeg.MixProject do
       compilers: [:unifex, :bundlex] ++ Mix.compilers(),
       app: :turbojpeg,
       version: @version,
-      elixir: "~> 1.9",
+      elixir: "~> 1.12",
       start_permanent: Mix.env() == :prod,
       description: "Elixir bindings for libjpeg-turbo",
       source_url: @github_link,
@@ -33,14 +33,14 @@ defmodule Turbojpeg.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:unifex, "~> 0.4.0"},
-      {:bundlex, "~> 0.4.0"},
-      {:membrane_core, "~> 0.6"},
+      {:unifex, "~> 1.1"},
+      {:membrane_core, "~> 0.12.0"},
+      {:membrane_raw_video_format, "~> 0.3.0"},
       {:ex_doc, "~> 0.24", only: [:test], runtime: false},
-      {:propcheck, "~> 1.2.0", only: [:test]},
-      {:mogrify, only: [:test, :dev]},
-      {:membrane_element_rawvideo_parser, "~> 0.3", only: :test},
-      {:dialyxir, "~> 1.1", only: [:dev], runtime: false}
+      {:propcheck, "~> 1.4.0", only: [:test]},
+      {:mogrify, "~> 0.9.0", only: [:test, :dev]},
+      {:membrane_raw_video_parser_plugin, "~> 0.11", only: :test},
+      {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
     ]
   end
 

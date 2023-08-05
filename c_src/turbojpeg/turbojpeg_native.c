@@ -45,7 +45,7 @@ UNIFEX_TERM get_jpeg_header(UnifexEnv* env, UnifexPayload *payload) {
   enum TJSAMP tjsamp;
   enum TJCS cspace;
   int res, width, height;
-  ERL_NIF_TERM map_out, ret;
+  UNIFEX_TERM ret;
 
   tjh = tjInitDecompress();
   if(!tjh)
@@ -63,37 +63,16 @@ UNIFEX_TERM get_jpeg_header(UnifexEnv* env, UnifexPayload *payload) {
     goto cleanup;
   }
 
-  // unifex does not support maps yes.
-  // See https://github.com/membraneframework/unifex/issues/32
-  if(!enif_make_map_from_arrays(
-    env,
-    (ERL_NIF_TERM []) {
-      enif_make_atom(env, "width"),
-      enif_make_atom(env, "height"),
-      enif_make_atom(env, "format"),
+  jpeg_header header = {(char*)tjsamp_to_format(tjsamp), width, height};
+  ret = get_jpeg_header_result_ok(env, header);
 
-    },
-    (ERL_NIF_TERM []) {
-      enif_make_int(env, width),
-      enif_make_int(env, height),
-      enif_make_atom(env, tjsamp_to_format(tjsamp))
-    },
-    3, &map_out
-  )) {
-    ret = get_jpeg_header_result_error(env, "make_map");
-    goto cleanup;
-  } else {
-    // Generated code does not support maps currently.
-    ret = enif_make_tuple_from_array(env, (ERL_NIF_TERM []) {enif_make_atom(env, "ok"), map_out}, 2);
-    goto cleanup;
-  }
 cleanup:
   if(tjh) tjDestroy(tjh);
   return ret;
 }
 
 /**
- * Convert a binary h264 payload into a jpeg encoded payload
+ * Convert a yuv binary payload into a jpeg encoded payload
 */
 UNIFEX_TERM yuv_to_jpeg(UnifexEnv* env, UnifexPayload *payload, int width, int height, int quality, char* format) {
   tjhandle tjh = NULL;
@@ -101,7 +80,7 @@ UNIFEX_TERM yuv_to_jpeg(UnifexEnv* env, UnifexPayload *payload, int width, int h
   unsigned char *jpegBuf = NULL;
   unsigned long jpegSize;
   int res;
-  UnifexPayload *jpegFrame;
+  UnifexPayload *jpegFrame = NULL;
   UNIFEX_TERM ret;
 
   res = format_to_tjsamp(format);
@@ -126,18 +105,19 @@ UNIFEX_TERM yuv_to_jpeg(UnifexEnv* env, UnifexPayload *payload, int width, int h
   if(res < 0) {
     ret = yuv_to_jpeg_result_error(env, tjGetErrorStr2(tjh));
     goto cleanup;
-  } else {
-    jpegFrame = unifex_payload_alloc(env, UNIFEX_PAYLOAD_BINARY, jpegSize);
-    if(!jpegFrame) {
-      ret = yuv_to_jpeg_result_error(env, "payload_alloc");
-    } else {
-      memcpy(jpegFrame->data, jpegBuf, jpegSize);
-      ret = yuv_to_jpeg_result_ok(env, jpegFrame);
-    }
-    goto cleanup;
   }
 
+  jpegFrame = unifex_alloc(sizeof(*jpegFrame));
+  unifex_payload_alloc(env, UNIFEX_PAYLOAD_BINARY, jpegSize, jpegFrame);
+  memcpy(jpegFrame->data, jpegBuf, jpegSize);
+  ret = yuv_to_jpeg_result_ok(env, jpegFrame);
+  
 cleanup:
+  if(jpegFrame != NULL) {
+    unifex_payload_release(jpegFrame);
+    unifex_free(jpegFrame);
+  } 
+    
   if(jpegBuf) tjFree(jpegBuf);
   if(tjh) tjDestroy(tjh);
   return ret;
@@ -151,7 +131,7 @@ UNIFEX_TERM jpeg_to_yuv(UnifexEnv* env, UnifexPayload *payload) {
   enum TJSAMP tjsamp;
   enum TJCS cspace;
   unsigned long yuvBufSize;
-  UnifexPayload *yuvFrame;
+  UnifexPayload *yuvFrame = NULL;
   int res, width, height;
   UNIFEX_TERM ret;
 
@@ -166,17 +146,15 @@ UNIFEX_TERM jpeg_to_yuv(UnifexEnv* env, UnifexPayload *payload) {
     &width, &height, 
     (int*)&tjsamp, (int*)&cspace
   );
+
   if(res < 0) {
     ret = jpeg_to_yuv_result_error(env, tjGetErrorStr2(tjh));
     goto cleanup;
   } 
   
   yuvBufSize = tjBufSizeYUV2(width, 4, height, tjsamp);
-  yuvFrame = unifex_payload_alloc(env, UNIFEX_PAYLOAD_BINARY, yuvBufSize);
-  if(!yuvFrame) {
-    ret = jpeg_to_yuv_result_error(env, "could not allocate frame");
-    goto cleanup;
-  }
+  yuvFrame = unifex_alloc(sizeof(*yuvFrame));
+  unifex_payload_alloc(env, UNIFEX_PAYLOAD_BINARY, yuvBufSize, yuvFrame);
 
   res = tjDecompressToYUV2(
     tjh, 
@@ -190,12 +168,16 @@ UNIFEX_TERM jpeg_to_yuv(UnifexEnv* env, UnifexPayload *payload) {
   if(res < 0) {
     ret = jpeg_to_yuv_result_error(env, tjGetErrorStr2(tjh));
     goto cleanup;
-  } else {
-    ret = jpeg_to_yuv_result_ok(env, yuvFrame);
-    goto cleanup;
   }
+    
+  ret = jpeg_to_yuv_result_ok(env, yuvFrame);
 
 cleanup:
+  if(yuvFrame != NULL) {
+    unifex_payload_release(yuvFrame);
+    unifex_free(yuvFrame);
+  }
+
   if(tjh) tjDestroy(tjh);
   return ret;
 }
