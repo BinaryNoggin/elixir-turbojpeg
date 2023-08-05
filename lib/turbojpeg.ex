@@ -1,6 +1,7 @@
 defmodule Turbojpeg do
   @moduledoc File.read!("README.md")
-  alias Turbojpeg.Native
+
+  alias Turbojpeg.{JpegHeader, Native}
 
   @type width :: dimension
   @type height :: dimension
@@ -11,14 +12,7 @@ defmodule Turbojpeg do
           | :I422
           | :I444
           | :GRAY
-  @type error ::
-          {:error, atom()}
-          | {:error, struct}
-  @type jpeg_header :: %{
-          format: format(),
-          width: width(),
-          height: height()
-        }
+  @type error :: {:error, atom()} | {:error, struct}
 
   @doc """
   Converts yuv to jpeg images
@@ -31,9 +25,6 @@ defmodule Turbojpeg do
           {:ok, binary()} | error()
   def yuv_to_jpeg(yuv, width, height, quality, format) do
     Native.yuv_to_jpeg(yuv, width, height, quality, format)
-  rescue
-    error ->
-      {:error, error}
   end
 
   @doc """
@@ -43,32 +34,30 @@ defmodule Turbojpeg do
         iex> {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
           {:ok,<<..>>}
   """
-  @spec jpeg_to_yuv(binary()) ::
-          {:ok, binary()} | error()
+  @spec jpeg_to_yuv(binary()) :: {:ok, binary()} | error()
   def jpeg_to_yuv(jpeg) do
     Native.jpeg_to_yuv(jpeg)
-  rescue
-    error ->
-      {:error, error}
   end
 
   @doc """
-  Gets the header from a jpegv
+  Gets the header from a jpeg binary
 
-       iex> {:ok, header} = Turbojpeg.get_jpeg_header(jpeg)
+  ## Examples
+
+      iex> {:ok, header} = Turbojpeg.get_jpeg_header(jpeg)
          {:ok,
-           %{
+           %Turbojpeg.JpegHeader{
               format: :I422,
               width: 192,
               height: 192
             }
          }
+
+      iex> Turbojpeg.get_jpeg_header(<<45, 48, 44, 41, 11>>)
+         {:error, "Not a JPEG file: starts with 0x2d 0x30"}
   """
-  @spec get_jpeg_header(binary()) :: {:ok, jpeg_header} | error()
+  @spec get_jpeg_header(binary()) :: {:ok, JpegHeader.t()} | error()
   def get_jpeg_header(jpeg) do
     Native.get_jpeg_header(jpeg)
-  rescue
-    error ->
-      {:error, error}
   end
 end

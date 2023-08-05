@@ -3,45 +3,49 @@ defmodule Turbojpeg.Filter do
   Membrane filter converting raw video frames to JPEG.
   """
   use Membrane.Filter
-  alias Membrane.Buffer
 
-  def_input_pad :input, demand_unit: :buffers, caps: Membrane.Caps.Video.Raw
-  # TODO: implement JPEG caps
-  def_output_pad :output, caps: :any
+  alias Membrane.Buffer
+  alias Membrane.RawVideo
+  alias Membrane.RemoteStream
+
+  def_input_pad :input,
+    flow_control: :auto,
+    demand_unit: :buffers,
+    accepted_format: %RawVideo{pixel_format: pix_fmt} when pix_fmt in [:I420, :I422, :I444]
+
+  # TODO: implement JPEG stream format
+  def_output_pad :output, accepted_format: RemoteStream
 
   def_options quality: [
-                type: :integer,
                 spec: Turbojpeg.quality(),
-                default: 100,
+                default: 75,
                 description: "Jpeg encoding quality"
               ]
 
   @impl true
-  def handle_demand(:output, size, :buffers, _ctx, state) do
-    {{:ok, demand: {:input, size}}, state}
+  def handle_init(_ctx, options) do
+    {[], Map.from_struct(options)}
   end
 
   @impl true
-  def handle_caps(:input, _caps, _ctx, state) do
-    {:ok, state}
+  def handle_stream_format(:input, _stream_format, _ctx, state) do
+    {[stream_format: {:output, %RemoteStream{type: :bytestream}}], state}
   end
 
   @impl true
-  def handle_process(:input, buffer, ctx, state) do
-    %{caps: caps} = ctx.pads.input
+  def handle_process(:input, %Buffer{payload: payload} = buffer, ctx, state) do
+    %{stream_format: stream_format} = ctx.pads.input
+    %{width: width, height: height, pixel_format: pix_fmt} = stream_format
 
-    with {:ok, payload} <-
-           Turbojpeg.yuv_to_jpeg(
-             buffer.payload,
-             caps.width,
-             caps.height,
-             state.quality,
-             caps.format
-           ) do
-      buffer = %Buffer{buffer | payload: payload}
-      {{:ok, buffer: {:output, buffer}}, state}
-    else
-      {:error, _} = error -> {error, state}
+    case Turbojpeg.yuv_to_jpeg(payload, width, height, state.quality, pix_fmt) do
+      {:ok, jpeg} ->
+        {[buffer: {:output, %Buffer{buffer | payload: jpeg}}], state}
+
+      error ->
+        raise """
+        could not create JPEG image
+        #{inspect(error)}
+        """
     end
   end
 end
