@@ -56,7 +56,6 @@ defmodule Turbojpeg.Sink do
 
   @impl true
   def handle_write(:input, %Buffer{payload: payload}, _ctx, state) do
-    IO.inspect(payload)
     with {:ok, data} <-
            Turbojpeg.yuv_to_jpeg(payload, state.width, state.height, state.quality, state.format),
          :ok <- File.write(state.filename, data) do

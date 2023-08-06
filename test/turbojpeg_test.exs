@@ -36,7 +36,7 @@ defmodule TurbojpegTest do
              rgb(),
              format()
            ] do
-      color = :io_lib.format('#~2.16.0B~2.16.0B~2.16.0B', [r, g, b])
+      color = :io_lib.format(~c"#~2.16.0B~2.16.0B~2.16.0B", [r, g, b])
 
       jpeg =
         %Mogrify.Image{}
@@ -47,10 +47,9 @@ defmodule TurbojpegTest do
         |> Mogrify.custom("stdout", "jpg:-")
         |> Mogrify.create(buffer: true)
 
-      jpeg = Shmex.new(jpeg.buffer)
-      {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
+      {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg.buffer)
 
-      {:ok, original_header} = Turbojpeg.get_jpeg_header(jpeg)
+      {:ok, original_header} = Turbojpeg.get_jpeg_header(jpeg.buffer)
 
       {:ok, new_jpeg} = Turbojpeg.yuv_to_jpeg(yuv, width, height, 100, original_header.format)
 
@@ -77,10 +76,9 @@ defmodule TurbojpegTest do
         |> Mogrify.custom("stdout", "jpg:-")
         |> Mogrify.create(buffer: true)
 
-      jpeg = Shmex.new(jpeg.buffer)
-      {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
+      {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg.buffer)
       {:ok, new_jpeg} = Turbojpeg.yuv_to_jpeg(yuv, width, height, quality, format)
-      {:ok, original_header} = Turbojpeg.get_jpeg_header(jpeg)
+      {:ok, original_header} = Turbojpeg.get_jpeg_header(jpeg.buffer)
       {:ok, new_header} = Turbojpeg.get_jpeg_header(new_jpeg)
       assert original_header == new_header
     end
