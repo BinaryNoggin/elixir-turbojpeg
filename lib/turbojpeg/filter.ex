@@ -14,7 +14,7 @@ defmodule Turbojpeg.Filter do
     accepted_format: %RawVideo{pixel_format: pix_fmt} when pix_fmt in [:I420, :I422, :I444]
 
   # TODO: implement JPEG stream format
-  def_output_pad :output, accepted_format: RemoteStream
+  def_output_pad :output, flow_control: :auto, accepted_format: RemoteStream
 
   def_options quality: [
                 spec: Turbojpeg.quality(),

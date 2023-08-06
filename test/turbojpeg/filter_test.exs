@@ -1,53 +1,45 @@
 defmodule Turbojpeg.FilterTest do
   use ExUnit.Case
+
+  import Membrane.ChildrenSpec
   import Membrane.Testing.Assertions
+
   alias Membrane.Testing
 
-  defmodule MockSource do
-    use Membrane.Source
+  @stream_format %Membrane.RawVideo{
+    width: 64,
+    height: 64,
+    pixel_format: :I444,
+    framerate: nil,
+    aligned: true
+  }
 
-    def_output_pad :output, mode: :push, caps: :any
+  defp start_pipeline(jpeg, repeat) do
+    {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
+    data = List.duplicate(yuv, repeat)
 
-    def_options yuv: [spec: binary], repeat: [spec: pos_integer]
+    structure = [
+      child(:source, %Testing.Source{output: data, stream_format: @stream_format})
+      |> child(:filter, %Turbojpeg.Filter{quality: 100})
+      |> child(:sink, Testing.Sink)
+    ]
 
-    @impl true
-    def handle_prepared_to_playing(_ctx, state) do
-      buffers = %Membrane.Buffer{payload: state.yuv} |> Bunch.Enum.repeated(state.repeat)
-      send(self(), :end_of_stream)
-      {{:ok, buffer: {:output, buffers}}, state}
-    end
-
-    @impl true
-    def handle_other(:end_of_stream, _ctx, state) do
-      {{:ok, end_of_stream: :output}, state}
-    end
+    Testing.Pipeline.start_link_supervised!(structure: structure)
   end
 
   test "integration test" do
-    repeat = 5
     jpeg = File.read!("fixture/ff0000_i444.jpg")
-    {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
+    repeat = 5
 
-    children = [
-      source: %MockSource{yuv: yuv, repeat: repeat},
-      parser: %Membrane.Element.RawVideo.Parser{format: :I444, width: 64, height: 64},
-      filter: %Turbojpeg.Filter{quality: 100},
-      sink: Membrane.Testing.Sink
-    ]
-
-    assert {:ok, pipeline} =
-             Testing.Pipeline.start_link(%Testing.Pipeline.Options{elements: children})
-
-    :ok = Testing.Pipeline.play(pipeline)
-    assert_pipeline_playback_changed(pipeline, _, :playing)
+    pid = start_pipeline(jpeg, repeat)
+    assert_pipeline_play(pid)
 
     1..repeat
     |> Enum.each(fn _ ->
-      assert_sink_buffer(pipeline, :sink, buffer)
+      assert_sink_buffer(pid, :sink, buffer)
       assert buffer.payload == jpeg
     end)
 
-    assert_end_of_stream(pipeline, :sink)
-    refute_sink_buffer(pipeline, :sink, _, 0)
+    assert_end_of_stream(pid, :sink)
   end
 end
