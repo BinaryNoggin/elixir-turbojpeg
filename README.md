@@ -61,38 +61,33 @@ iex(3)> File.write!("test.jpg", jpeg)
 
 ## Membrane Sink Usage
 
-Pleas See [the membrane guide](https://membraneframework.org/guide/v0.5/pipeline.html#content)
-before using this.
+In this example we'll read an H264 encoded frame and save it as a JPEG image
 
 ```elixir
 defmodule Your.Module.Pipeline do
   use Membrane.Pipeline
 
-  @impl true
-  def handle_init(location) do
-    children = %{
-      source: %SomeMembraneSourceModule{location: location},
-      decoder: Membrane.Element.FFmpeg.H264.Decoder,
-      jpeg_converter: %Turbojpeg.Sink{filename: "/tmp/frame.jpeg", quality: 100},
-    }
+  alias Membrane.{File, H264}
 
-    links = [
-      link(:source) 
-      |> to(:decoder) 
-      |> to(:jpeg_converter) 
+  @impl true
+  def handle_init(_ctx, _opts) do
+    children = [
+      child(:source, %File.Source{location: "input.h264"})
+      |> child(:parser, H264.Parser)
+      |> child(:decoder, H264.FFmpeg.Decoder)
+      |> child(:sink, %Turbojpeg.Sink{filename: "/tmp/frame.jpeg", quality: 100})
     ]
 
-    spec = %ParentSpec{
-      children: children,
-      links: links
-    }
-
-    {{:ok, spec: spec}, %{}}
+    {[spec: spec], %{}}
   end
 
+  @impl true
+  def handle_element_end_of_stream(:sink, _ctx, state) do
+    {[terminate: :normal], state}
+  end
 end
 ```
 
 # Copyright and License
 
-Copyright 2021, Binary Noggin
+Copyright 2023, Binary Noggin
