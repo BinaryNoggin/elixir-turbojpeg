@@ -63,7 +63,7 @@ defmodule Turbojpeg.Sink do
     else
       error ->
         raise """
-        could not create a JPG file
+        could not create a JPEG file
         #{inspect(error)}
         """
     end

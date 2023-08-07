@@ -39,7 +39,6 @@ defmodule Turbojpeg.MixProject do
       {:ex_doc, "~> 0.24", only: [:test], runtime: false},
       {:propcheck, "~> 1.4.0", only: [:test]},
       {:mogrify, "~> 0.9.0", only: [:test, :dev]},
-      {:membrane_raw_video_parser_plugin, "~> 0.11", only: :test},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}
     ]
   end
