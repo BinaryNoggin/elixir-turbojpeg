@@ -1,7 +1,11 @@
 defmodule TurbojpegTest do
+  @moduledoc false
+
   use ExUnit.Case
   use PropCheck, numtests: 10
   use Mogrify.Options
+
+  alias Turbojpeg.JpegHeader
 
   @jpeg_header <<255, 216, 255>>
   @i420_fixture "fixture/i420.yuv"
@@ -22,7 +26,7 @@ defmodule TurbojpegTest do
 
   test "get jpeg header" do
     jpeg = File.read!(@ff0000_fixture)
-    {:ok, result} = Turbojpeg.get_jpeg_header(jpeg)
+    {:ok, %JpegHeader{} = result} = Turbojpeg.get_jpeg_header(jpeg)
     assert result.width == 64
     assert result.height == 64
     assert result.format == :I444
