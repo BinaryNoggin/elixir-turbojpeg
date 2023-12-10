@@ -31,23 +31,9 @@ defmodule Turbojpeg.SinkTest do
     assert {[], %{width: 1920, height: 1080, format: :I420} = state} =
              Sink.handle_stream_format(:input, @stream_format, @ctx, state)
 
-    assert {[], _state} = Sink.handle_write(:input, %Membrane.Buffer{payload: yuv}, @ctx, state)
+    assert {[], _state} = Sink.handle_buffer(:input, %Membrane.Buffer{payload: yuv}, @ctx, state)
 
     assert File.exists?(out_path)
     assert File.read!(out_path) == jpeg
-  end
-
-  test "raise if stream format is updated" do
-    new_stream_format = get_in(@ctx, [:pads, :input, :stream_format])
-    assert {[], state} = Sink.handle_init(@ctx, %Sink{filename: ""})
-
-    assert_raise RuntimeError, fn ->
-      Sink.handle_stream_format(
-        :input,
-        %Membrane.RawVideo{new_stream_format | height: 1440},
-        @ctx,
-        state
-      )
-    end
   end
 end

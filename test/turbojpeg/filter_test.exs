@@ -18,13 +18,13 @@ defmodule Turbojpeg.FilterTest do
     {:ok, yuv} = Turbojpeg.jpeg_to_yuv(jpeg)
     data = List.duplicate(yuv, repeat)
 
-    structure = [
+    spec = [
       child(:source, %Testing.Source{output: data, stream_format: @stream_format})
       |> child(:filter, %Turbojpeg.Filter{quality: 100})
       |> child(:sink, Testing.Sink)
     ]
 
-    Testing.Pipeline.start_link_supervised!(structure: structure)
+    Testing.Pipeline.start_link_supervised!(spec: spec)
   end
 
   test "integration test" do
@@ -32,7 +32,7 @@ defmodule Turbojpeg.FilterTest do
     repeat = 5
 
     pid = start_pipeline(jpeg, repeat)
-    assert_pipeline_play(pid)
+    assert_sink_playing(pid, :sink)
 
     1..repeat
     |> Enum.each(fn _ ->
@@ -41,5 +41,6 @@ defmodule Turbojpeg.FilterTest do
     end)
 
     assert_end_of_stream(pid, :sink)
+    Testing.Pipeline.terminate(pid)
   end
 end

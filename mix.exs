@@ -33,10 +33,11 @@ defmodule Turbojpeg.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      {:unifex, "~> 1.1"},
-      {:membrane_core, "~> 0.12.0"},
+      {:bundlex, "~> 1.4.0"},
+      {:unifex, "~> 1.1.0"},
+      {:membrane_core, "~> 1.0"},
       {:membrane_raw_video_format, "~> 0.3.0"},
-      {:ex_doc, "~> 0.24", only: [:test], runtime: false},
+      {:ex_doc, "~> 0.30", only: :dev, runtime: false},
       {:propcheck, "~> 1.4.0", only: [:test]},
       {:mogrify, "~> 0.9.0", only: [:test, :dev]},
       {:dialyxir, "~> 1.3", only: [:dev], runtime: false}

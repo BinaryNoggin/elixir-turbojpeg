@@ -13,7 +13,11 @@ defmodule Turbojpeg.BundlexProject do
         interface: :nif,
         preprocessor: Unifex,
         sources: ["turbojpeg_native.c"],
-        pkg_configs: ["libturbojpeg"]
+        os_deps: [
+          turbojpeg: [
+            {:pkg_config, ["libturbojpeg"]}
+          ]
+        ]
       ]
     ]
   end
