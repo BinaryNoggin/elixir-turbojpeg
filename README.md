@@ -40,7 +40,7 @@ by adding `turbojpeg` to your list of dependencies in `mix.exs`:
 ```elixir
 def deps do
   [
-    {:turbojpeg, "~> 0.3"}
+    {:turbojpeg, "~> 0.4"}
   ]
 end
 ```
